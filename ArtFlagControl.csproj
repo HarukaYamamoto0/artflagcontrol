@@ -1,0 +1,84 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Version>1.0.0</Version>
+        <ModVersion>$(Version)</ModVersion>
+        <ZipName>art_flag_control</ZipName>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <AssemblyName>ArtFlagControl</AssemblyName>
+        <RootNamespace>ArtFlagControl</RootNamespace>
+
+        <OutputType>Library</OutputType>
+        <LangVersion>latest</LangVersion>
+        <Nullable>disable</Nullable>
+
+        <OutputPath>artifacts/$(Configuration)/Mods/</OutputPath>
+        <ReleaseDir>$(ProjectDir)Releases</ReleaseDir>
+
+        <DebugSymbols>false</DebugSymbols>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <Deterministic>true</Deterministic>
+        <ImplicitUsings>false</ImplicitUsings>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <Optimize>false</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="BepInEx">
+            <HintPath>libs\BepInEx.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <Reference Include="0Harmony">
+            <HintPath>libs\0Harmony.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <Reference Include="UnityEngine">
+            <HintPath>libs\UnityEngine.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        
+        <Reference Include="Assembly-CSharp">
+            <HintPath>libs\Assembly-CSharp.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+
+    <Target Name="CopyToBepInExsWithTimestamp" AfterTargets="Build">
+        <MakeDir
+                Directories="G:\SteamLibrary\steamapps\common\Mage Arena\BepInEx\plugins\ArtFlagControl"/>
+
+        <Copy
+                SourceFiles="$(TargetPath)"
+                DestinationFolder="G:\SteamLibrary\steamapps\common\Mage Arena\BepInEx\plugins\ArtFlagControl"
+        />
+    </Target>
+
+    <Target Name="ZipMod" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' And Exists('$(OutputPath)$(AssemblyName).dll')">
+        <MakeDir Directories="$(ReleaseDir)"/>
+
+        <PropertyGroup>
+            <ZipFile>$(ReleaseDir)/$(ZipName)_v$(ModVersion).zip</ZipFile>
+        </PropertyGroup>
+
+        <Message Text="Zipping $(OutputPath) -> $(ZipFile)" Importance="High"/>
+
+        <ZipDirectory SourceDirectory="$(OutputPath)" DestinationFile="$(ZipFile)" Overwrite="true"/>
+    </Target>
+
+</Project>
