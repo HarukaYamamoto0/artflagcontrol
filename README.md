@@ -153,8 +153,3 @@ com.harukadev.magearena.artflagcontrol
 
 MIT License
 Feel free to fork, modify, and contribute.
-
-## 👤 Author
-
-**HarukaDev**
-Backend & Game Mod Developer

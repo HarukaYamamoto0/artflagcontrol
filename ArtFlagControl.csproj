@@ -4,6 +4,8 @@
         <Version>1.0.0</Version>
         <ModVersion>$(Version)</ModVersion>
         <ZipName>art_flag_control</ZipName>
+
+        <GamePath>G:\SteamLibrary\steamapps\common\Mage Arena</GamePath>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -33,39 +35,65 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Reference Include="BepInEx">
-            <HintPath>libs\BepInEx.dll</HintPath>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(GamePath)\MageArena_Data\Managed\Assembly-CSharp.dll</HintPath>
             <Private>false</Private>
         </Reference>
 
-        <Reference Include="0Harmony">
-            <HintPath>libs\0Harmony.dll</HintPath>
+        <Reference Include="BepInEx">
+            <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
             <Private>false</Private>
         </Reference>
 
         <Reference Include="UnityEngine">
-            <HintPath>libs\UnityEngine.dll</HintPath>
+            <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <Reference Include="UnityEngine.UI">
+            <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.UI.dll</HintPath>
             <Private>false</Private>
         </Reference>
 
         <Reference Include="UnityEngine.CoreModule">
-            <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
-        
-        <Reference Include="Assembly-CSharp">
-            <HintPath>libs\Assembly-CSharp.dll</HintPath>
+
+        <Reference Include="UnityEngine.UnityWebRequestModule">
+            <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
+
+        <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+            <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <Reference Include="UnityEngine.ImageConversionModule">
+            <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <PackageReference Include="Lib.Harmony" Version="2.4.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="context\**\*"/>
     </ItemGroup>
 
     <Target Name="CopyToBepInExsWithTimestamp" AfterTargets="Build">
         <MakeDir
-                Directories="G:\SteamLibrary\steamapps\common\Mage Arena\BepInEx\plugins\ArtFlagControl"/>
+                Directories="$(GamePath)\BepInEx\plugins\ArtFlagControl"/>
 
         <Copy
                 SourceFiles="$(TargetPath)"
-                DestinationFolder="G:\SteamLibrary\steamapps\common\Mage Arena\BepInEx\plugins\ArtFlagControl"
+                DestinationFolder="$(GamePath)\BepInEx\plugins\ArtFlagControl"
         />
     </Target>
 

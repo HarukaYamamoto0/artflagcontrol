@@ -3,62 +3,111 @@ using UnityEngine;
 
 namespace ArtFlagControl.Config;
 
-public sealed class FlagConfig(ConfigFile config)
+public sealed class FlagConfig
 {
-    public ConfigEntry<bool> Enabled { get; } = BindBool(
-        config,
-        "General",
-        "Enabled",
-        true,
-        "Enable ArtFlagControl mod"
-    );
+    public ConfigEntry<bool> Enabled { get; }
+    public ConfigEntry<bool> UseCache { get; }
+    public ConfigEntry<bool> DebugMode { get; }
+    public ConfigEntry<string> NeutralHex { get; }
+    public ConfigEntry<string> SorcererHex { get; }
+    public ConfigEntry<string> WarlockHex { get; }
 
-    private ConfigEntry<string> NeutralHex { get; } = BindColor(
-        config,
-        "Neutral",
-        "#D6D6D6",
-        "Neutral faction flag color"
-    );
+    public ConfigEntry<string> NeutralImagePath { get; }
+    public ConfigEntry<string> SorcererImagePath { get; }
+    public ConfigEntry<string> WarlockImagePath { get; }
 
-    private ConfigEntry<string> SorcererHex { get; } = BindColor(
-        config,
-        "Sorcerer",
-        "#4B4A6A",
-        "Sorcerer faction flag color"
-    );
-
-    private ConfigEntry<string> WarlockHex { get; } = BindColor(
-        config,
-        "Warlock",
-        "#2A1E28",
-        "Warlock faction flag color"
-    );
+    public ConfigEntry<string> NeutralImageUrl { get; }
+    public ConfigEntry<string> SorcererImageUrl { get; }
+    public ConfigEntry<string> WarlockImageUrl { get; }
 
     public Color NeutralColor => Parse(NeutralHex.Value, new Color(0.84f, 0.84f, 0.84f));
     public Color SorcererColor => Parse(SorcererHex.Value, new Color(0.29f, 0.29f, 0.42f));
     public Color WarlockColor => Parse(WarlockHex.Value, new Color(0.16f, 0.12f, 0.15f));
 
-    private static ConfigEntry<bool> BindBool(
-        ConfigFile cfg,
-        string section,
-        string key,
-        bool def,
-        string desc)
+    public FlagConfig(ConfigFile config)
     {
-        return cfg.Bind(section, key, def, desc);
-    }
+        Enabled = config.Bind(
+            "General",
+            "Enabled",
+            true,
+            "Enables or disables the ArtFlagControl mod. If disabled, flags will return to the game default upon restarting the match."
+        );
 
-    private static ConfigEntry<string> BindColor(
-        ConfigFile cfg,
-        string section,
-        string def,
-        string desc)
-    {
-        return cfg.Bind(
+        UseCache = config.Bind(
+            "General",
+            "UseCache",
+            true,
+            "Enables local cache for textures via URL. This avoids repeated downloads and prevents rate limiting from sites like Imgur."
+        );
+
+        DebugMode = config.Bind(
+            "General",
+            "DebugMode",
+            false,
+            "Enables detailed logs in the console. Useful for identifying why a texture is not being applied or discovering internal field names."
+        );
+
+        NeutralHex = config.Bind(
             "Colors",
-            $"{section}HexColor",
-            def,
-            desc
+            "NeutralHexColor",
+            "#D6D6D6",
+            "Hexadecimal color for the Neutral faction. Used only if ImagePath and ImageUrl are empty. Example: #FF0000 for red."
+        );
+
+        SorcererHex = config.Bind(
+            "Colors",
+            "SorcererHexColor",
+            "#4B4A6A",
+            "Hexadecimal color for the Sorcerer faction. Used only if ImagePath and ImageUrl are empty."
+        );
+
+        WarlockHex = config.Bind(
+            "Colors",
+            "WarlockHexColor",
+            "#2A1E28",
+            "Hexadecimal color for the Warlock faction. Used only if ImagePath and ImageUrl are empty."
+        );
+
+        NeutralImagePath = config.Bind(
+            "Textures",
+            "NeutralImagePath",
+            "",
+            "Local path to an image (.png or .jpg) for the Neutral faction. Priority: ImageUrl > ImagePath > HexColor. Example: C:\\MyImages\\flag.png"
+        );
+
+        SorcererImagePath = config.Bind(
+            "Textures",
+            "SorcererImagePath",
+            "",
+            "Local path to an image (.png or .jpg) for the Sorcerer faction. Example: D:\\Games\\MageArena\\my_texture.jpg"
+        );
+
+        WarlockImagePath = config.Bind(
+            "Textures",
+            "WarlockImagePath",
+            "",
+            "Local path to an image (.png or .jpg) for the Warlock faction."
+        );
+
+        NeutralImageUrl = config.Bind(
+            "DynamicTextures",
+            "NeutralImageUrl",
+            "",
+            "Direct URL to an image on the internet for the Neutral faction. Has the highest priority. Example: https://i.imgur.com/image_link.png"
+        );
+
+        SorcererImageUrl = config.Bind(
+            "DynamicTextures",
+            "SorcererImageUrl",
+            "https://www.harukadev.com/img/public/sorceres_banner.jpg",
+            "Direct URL to an image on the internet for the Sorcerer faction."
+        );
+
+        WarlockImageUrl = config.Bind(
+            "DynamicTextures",
+            "WarlockImageUrl",
+            "https://www.harukadev.com/img/public/warlocks_banner.jpg",
+            "Direct URL to an image on the internet for the Warlock faction."
         );
     }
 

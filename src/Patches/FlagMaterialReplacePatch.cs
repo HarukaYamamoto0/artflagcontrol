@@ -1,21 +1,24 @@
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
 namespace ArtFlagControl.Patches;
 
 [HarmonyPatch(typeof(MainMenuManager))]
+// ReSharper disable once UnusedType.Global
 public class FlagMaterialReplacePatch
 {
     [HarmonyPatch("ActuallyStartGameActually")]
     [HarmonyPostfix]
+    // ReSharper disable once UnusedMember.Global
     public static void Postfix()
     {
-        if (!ArtFlagControlMod.ConfigData.Enabled.Value) return;
+        if (!ModSystem.ConfigData.Enabled.Value) return;
 
         var flagType = AccessTools.TypeByName("FlagController");
         if (flagType == null)
         {
-            ArtFlagControlMod.Log.LogError("ArtFlagControl: FlagController type not found!");
+            ModSystem.Log.LogError("ArtFlagControl: FlagController type not found!");
             return;
         }
 
@@ -26,35 +29,31 @@ public class FlagMaterialReplacePatch
         );
         if (flags.Length == 0) return;
 
-        ArtFlagControlMod.Log.LogInfo("ArtFlagControl: Re-applying materials to " + flags.Length + " flags");
-
-        var flagVisualField = AccessTools.Field(flagType, "flagvisual");
-        var flagMatsField = AccessTools.Field(flagType, "flagMats");
-        
-        var cfg = ArtFlagControlMod.ConfigData;
+        var flagMatsField = flagType.GetField("flagMats", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        if (flagMatsField == null) return;
 
         foreach (var flag in flags)
         {
             var mats = (Material[])flagMatsField.GetValue(flag);
             if (mats == null || mats.Length == 0) continue;
-
-            FlagMaterialProvider.Init(
-                mats[0],
-                cfg.NeutralColor,
-                cfg.SorcererColor,
-                cfg.WarlockColor
-            );
-
-            var renderer = (SkinnedMeshRenderer)flagVisualField.GetValue(flag);
-            if (renderer != null)
+            
+            // Try to find a good base material (prefer Neutral)
+            Material baseMat = null;
+            foreach (var m in mats)
             {
-                renderer.material = FlagMaterialProvider.Get(0);
+                if (m == null) continue;
+                if (m.name.ToLowerInvariant().Contains("neutral"))
+                {
+                    baseMat = m;
+                    break;
+                }
             }
+            
+            if (baseMat == null) baseMat = mats[0]; // Fallback to first
+            if (baseMat == null) continue;
 
-            if (mats.Length > 1) mats[1] = FlagMaterialProvider.Get(1);
-            if (mats.Length > 2) mats[2] = FlagMaterialProvider.Get(2);
-
-            ArtFlagControlMod.Log.LogInfo("Flag replaced");
+            ModSystem.FlagMaterialProvider.Init(baseMat);
+            break;
         }
     }
 }
