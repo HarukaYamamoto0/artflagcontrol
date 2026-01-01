@@ -40,6 +40,11 @@
             <Private>false</Private>
         </Reference>
 
+        <Reference Include="0Harmony">
+            <HintPath>$(GamePath)\BepInEx\core\0Harmony.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
         <Reference Include="BepInEx">
             <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
             <Private>false</Private>
@@ -79,8 +84,7 @@
             <HintPath>$(GamePath)\MageArena_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
-
-        <PackageReference Include="Lib.Harmony" Version="2.4.2"/>
+        
     </ItemGroup>
 
     <ItemGroup>

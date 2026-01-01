@@ -135,7 +135,7 @@ public class ModSystem : BaseUnityPlugin
 
         FlagMaterialProvider?.Cleanup();
         
-        _harmony?.UnpatchAll(_harmony.Id);
+        _harmony?.UnpatchSelf();
         Log.LogInfo("ArtFlagControl unloaded");
     }
 }
