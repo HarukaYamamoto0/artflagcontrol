@@ -30,84 +30,84 @@ public sealed class FlagConfig
             "General",
             "Enabled",
             true,
-            "Enables or disables the ArtFlagControl mod. If disabled, flags will return to the game default upon restarting the match."
+            "Toggle the ArtFlagControl mod. When disabled, flag appearances will revert to game defaults upon match restart."
         );
 
         UseCache = config.Bind(
             "General",
             "UseCache",
             true,
-            "Enables local cache for textures via URL. This avoids repeated downloads and prevents rate limiting from sites like Imgur."
+            "Enable local caching for textures downloaded via URL. This reduces bandwidth usage and prevents rate limiting from external image hosts."
         );
 
         DebugMode = config.Bind(
             "General",
             "DebugMode",
             false,
-            "Enables detailed logs in the console. Useful for identifying why a texture is not being applied or discovering internal field names."
+            "Enable verbose logging in the console. Useful for troubleshooting texture application issues and identifying internal object names."
         );
 
         NeutralHex = config.Bind(
             "Colors",
             "NeutralHexColor",
             "#D6D6D6",
-            "Hexadecimal color for the Neutral faction. Used only if ImagePath and ImageUrl are empty. Example: #FF0000 for red."
+            "Hexadecimal color code for the Neutral faction. This color is applied only if both ImagePath and ImageUrl are empty. Example: #FFFFFF for white."
         );
 
         SorcererHex = config.Bind(
             "Colors",
             "SorcererHexColor",
             "#4B4A6A",
-            "Hexadecimal color for the Sorcerer faction. Used only if ImagePath and ImageUrl are empty."
+            "Hexadecimal color code for the Sorcerer faction. This color is applied only if both ImagePath and ImageUrl are empty."
         );
 
         WarlockHex = config.Bind(
             "Colors",
             "WarlockHexColor",
             "#2A1E28",
-            "Hexadecimal color for the Warlock faction. Used only if ImagePath and ImageUrl are empty."
+            "Hexadecimal color code for the Warlock faction. This color is applied only if both ImagePath and ImageUrl are empty."
         );
 
         NeutralImagePath = config.Bind(
             "Textures",
             "NeutralImagePath",
             "",
-            "Local path to an image (.png or .jpg) for the Neutral faction. Priority: ImageUrl > ImagePath > HexColor. Example: C:\\MyImages\\flag.png"
+            "The local file path to a custom image (.png or .jpg) for the Neutral faction. Priority order: ImageUrl > ImagePath > HexColor."
         );
 
         SorcererImagePath = config.Bind(
             "Textures",
             "SorcererImagePath",
             "",
-            "Local path to an image (.png or .jpg) for the Sorcerer faction. Example: D:\\Games\\MageArena\\my_texture.jpg"
+            "The local file path to a custom image (.png or .jpg) for the Sorcerer faction."
         );
 
         WarlockImagePath = config.Bind(
             "Textures",
             "WarlockImagePath",
             "",
-            "Local path to an image (.png or .jpg) for the Warlock faction."
+            "The local file path to a custom image (.png or .jpg) for the Warlock faction."
         );
 
         NeutralImageUrl = config.Bind(
             "DynamicTextures",
             "NeutralImageUrl",
             "",
-            "Direct URL to an image on the internet for the Neutral faction. Has the highest priority. Example: https://i.imgur.com/image_link.png"
+            "Direct web URL to an image for the Neutral faction. This setting has the highest priority over local paths and hex colors."
         );
 
         SorcererImageUrl = config.Bind(
             "DynamicTextures",
             "SorcererImageUrl",
             "https://www.harukadev.com/img/public/sorceres_banner.jpg",
-            "Direct URL to an image on the internet for the Sorcerer faction."
+            "Direct web URL to an image for the Sorcerer faction."
         );
 
         WarlockImageUrl = config.Bind(
             "DynamicTextures",
             "WarlockImageUrl",
             "https://www.harukadev.com/img/public/warlocks_banner.jpg",
-            "Direct URL to an image on the internet for the Warlock faction."
+            "Direct web URL to an image for the Warlock faction."
         );
     }
 
