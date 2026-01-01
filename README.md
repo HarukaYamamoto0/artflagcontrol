@@ -1,12 +1,21 @@
 # ArtFlagControl
 
-**ArtFlagControl** is a lightweight visual mod for **Mage Arena** that allows you to customize faction flag colors in a clean, HDRP-friendly way.
+**ArtFlagControl** is a lightweight client-side visual mod for **Mage Arena** that allows you to control how you see the flag. 
+After all, sometimes some players might draw indecent things on the team flag, but maybe you just want a personalized flag.
 
-The mod replaces the default flag materials at runtime, giving each faction a distinct visual identity while avoiding common HDRP issues such as excessive shine, flickering, or neon colors.
+The mod replaces the default flag materials at runtime, giving each faction a distinct visual identity while avoiding
+common HDRP issues such as excessive shine, flickering, or neon colors.
+
+## 📸 Screenshots
+
+|                  Solid Color                   |                   Sorcerers URL                   |                    Warlocks                     | Local Flag                                    |
+|:----------------------------------------------:|:-------------------------------------------------:|:-----------------------------------------------:|-----------------------------------------------|
+| ![Solid Color](.github/assets/solid_color.gif) | ![Sorcerer Flag](.github/assets/sorcerer_url.gif) | ![Warlock Flag](.github/assets/warlock_url.gif) | ![Local Flag](.github/assets/local_image.gif) |
 
 ## ✨ Features
 
 * 🎨 Customizable flag colors per faction
+* 🖼️ **New:** Custom local textures and remote image URLs support
 * 🧙 Designed specifically for **Mage Arena**
 * 🏳️ Supports:
 
@@ -39,7 +48,7 @@ ArtFlagControl uses:
 This results in flags that:
 
 * remain readable at a distance
-* feel like fabric
+* it feels like fabric
 * blend naturally into the world
 
 ## 📦 Installation
@@ -48,9 +57,9 @@ This results in flags that:
 2. Download the latest release of **ArtFlagControl**
 3. Extract the DLL into:
 
-```
-MageArena/BepInEx/plugins/
-```
+  ```
+  MageArena/BepInEx/plugins/
+  ```
 
 4. Launch the game once to generate the config file
 5. Edit the config if desired
@@ -72,34 +81,78 @@ BepInEx/config/com.harukadev.magearena.artflagcontrol.cfg
 
 [Colors]
 
-## Neutral faction flag color
+## Hexadecimal color code for the Neutral faction. This color is applied only if both ImagePath and ImageUrl are empty. Example: #FFFFFF for white.
 # Setting type: String
 # Default value: #D6D6D6
 NeutralHexColor = #D6D6D6
 
-## Sorcerer faction flag color
+## Hexadecimal color code for the Sorcerer faction. This color is applied only if both ImagePath and ImageUrl are empty.
 # Setting type: String
 # Default value: #4B4A6A
 SorcererHexColor = #4B4A6A
 
-## Warlock faction flag color
+## Hexadecimal color code for the Warlock faction. This color is applied only if both ImagePath and ImageUrl are empty.
 # Setting type: String
 # Default value: #2A1E28
 WarlockHexColor = #2A1E28
 
+[DynamicTextures]
+
+## Direct web URL to an image for the Neutral faction. This setting has the highest priority over local paths and hex colors.
+# Setting type: String
+# Default value: 
+NeutralImageUrl =
+
+## Direct web URL to an image for the Sorcerer faction.
+# Setting type: String
+# Default value: https://www.harukadev.com/img/public/sorceres_banner.jpg
+SorcererImageUrl = https://www.harukadev.com/img/public/sorceres_banner.jpg
+
+## Direct web URL to an image for the Warlock faction.
+# Setting type: String
+# Default value: https://www.harukadev.com/img/public/warlocks_banner.jpg
+WarlockImageUrl = https://www.harukadev.com/img/public/warlocks_banner.jpg
+
 [General]
 
-## Enable ArtFlagControl mod
+## Toggle the ArtFlagControl mod. When disabled, flag appearances will revert to game defaults upon match restart.
 # Setting type: Boolean
 # Default value: true
 Enabled = true
+
+## Enable local caching for textures downloaded via URL. This reduces bandwidth usage and prevents rate limiting from external image hosts.
+# Setting type: Boolean
+# Default value: true
+UseCache = true
+
+## Enable verbose logging in the console. Useful for troubleshooting texture application issues and identifying internal object names.
+# Setting type: Boolean
+# Default value: false
+DebugMode = false
+
+[Textures]
+
+## The local file path to a custom image (.png or .jpg) for the Neutral faction. Priority order: ImageUrl > ImagePath > HexColor.
+# Setting type: String
+# Default value: 
+NeutralImagePath =
+
+## The local file path to a custom image (.png or .jpg) for the Sorcerer faction.
+# Setting type: String
+# Default value: 
+SorcererImagePath =
+
+## The local file path to a custom image (.png or .jpg) for the Warlock faction.
+# Setting type: String
+# Default value: 
+WarlockImagePath =
 ```
 
 ### Notes
 
-* Colors must be valid **HEX color strings**
-* Invalid values automatically fall back to safe defaults
-* Changes require a game restart (for now)
+* Priority order for appearance: **ImageUrl** (highest) > **ImagePath** > **HexColor** (lowest).
+* Colors must be valid **HEX color strings**.
+* Local paths must be absolute paths to `.png` or `.jpg` files.
 
 ## 🧠 Technical Overview
 
@@ -114,7 +167,7 @@ Enabled = true
     * Low smoothness
     * Disabled emission
     * Disabled GPU instancing
-    * Disabled normal map (to prevent shimmer)
+    * Disabled a normal map (to prevent shimmer)
 * Applies materials using `.material` to allow **per-flag customization**
 
 ## 🔌 Compatibility
@@ -142,14 +195,6 @@ Enabled = true
 com.harukadev.magearena.artflagcontrol
 ```
 
-## 🚀 Future Ideas
-
-* Live reload when config changes
-* Support for additional factions
-* Preset profiles (PVP / PVE / Dark Fantasy)
-* Optional normal-map strength instead of full disable
-
 ## 📜 License
 
-MIT License
-Feel free to fork, modify, and contribute.
+[MIT License](./LICENSE)
