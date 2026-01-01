@@ -59,8 +59,7 @@ public class ModSystem : BaseUnityPlugin
         {
             if (!(bool)args.ChangedSetting.BoxedValue)
             {
-                // Mod disabled, maybe we should revert materials? 
-                // For now just stop updating.
+                FlagMaterialProvider.RevertToOriginal();
             }
             else
             {
@@ -68,6 +67,8 @@ public class ModSystem : BaseUnityPlugin
             }
             return;
         }
+
+        if (!ConfigData.Enabled.Value) return;
 
         FlagMaterialProvider.UpdateMaterials();
     }

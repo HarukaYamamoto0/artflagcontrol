@@ -30,6 +30,10 @@ public class FlagMaterialProvider
     private Material _sorcerer;
     private Material _warlock;
 
+    private Material _origNeutral;
+    private Material _origSorcerer;
+    private Material _origWarlock;
+
     private readonly Coroutine[] _activeLoads = new Coroutine[3];
     private readonly Dictionary<int, int> _valToIndexMap = new();
 
@@ -60,6 +64,50 @@ public class FlagMaterialProvider
         UpdateMaterials();
     }
 
+    public bool TryInitFromScene()
+    {
+        if (_init && _baseMaterial != null) return true;
+
+        EnsureReflectionInit();
+        if (_flagControllerType == null) return false;
+
+        var flags = Object.FindObjectsByType(
+            _flagControllerType,
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
+
+        if (flags.Length == 0) return false;
+
+        foreach (var flag in flags)
+        {
+            var mats = (Material[])_flagMatsField.GetValue(flag);
+            if (mats == null || mats.Length == 0) continue;
+
+            Material baseMat = null;
+            foreach (var m in mats)
+            {
+                if (m == null || m.name.StartsWith("ArtFlag_")) continue;
+                if (m.name.ToLowerInvariant().Contains("neutral"))
+                {
+                    baseMat = m;
+                    break;
+                }
+            }
+
+            if (baseMat == null && mats.Length > 0 && !mats[0].name.StartsWith("ArtFlag_")) 
+                baseMat = mats[0];
+
+            if (baseMat != null)
+            {
+                Init(baseMat);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void DetectIndices(Material[] mats)
     {
         if (mats == null || mats.Length == 0) return;
@@ -77,13 +125,15 @@ public class FlagMaterialProvider
             for (int i = 0; i < mats.Length; i++)
             {
                 if (mats[i] == null) continue;
+                if (mats[i].name.StartsWith("ArtFlag_")) continue;
+
                 string n = mats[i].name.ToLowerInvariant();
 
-                if (n.Contains("sorcerer")) _sorcererIdx = i;
-                else if (n.Contains("warlock")) _warlockIdx = i;
-                else if (n.Contains("neutral") || n.Contains("blank")) _neutralIdx = i;
-                else if (n.Contains("flag1")) _sorcererIdx = i;
-                else if (n.Contains("flag2")) _warlockIdx = i;
+                if (n.Contains("sorcerer")) { _sorcererIdx = i; _origSorcerer = mats[i]; }
+                else if (n.Contains("warlock")) { _warlockIdx = i; _origWarlock = mats[i]; }
+                else if (n.Contains("neutral") || n.Contains("blank")) { _neutralIdx = i; _origNeutral = mats[i]; }
+                else if (n.Contains("flag1")) { _sorcererIdx = i; _origSorcerer = mats[i]; }
+                else if (n.Contains("flag2")) { _warlockIdx = i; _origWarlock = mats[i]; }
             }
 
             if (_sorcererIdx != -1 || _warlockIdx != -1 || _neutralIdx != -1)
@@ -97,7 +147,21 @@ public class FlagMaterialProvider
                 _sorcererIdx = 0;
                 _warlockIdx = mats.Length > 1 ? 1 : 0;
                 _neutralIdx = mats.Length > 2 ? 2 : 0;
+
+                if (_origSorcerer == null && mats.Length > _sorcererIdx) _origSorcerer = mats[_sorcererIdx];
+                if (_origWarlock == null && mats.Length > _warlockIdx) _origWarlock = mats[_warlockIdx];
+                if (_origNeutral == null && mats.Length > _neutralIdx) _origNeutral = mats[_neutralIdx];
             }
+        }
+        else
+        {
+            // Even if indices are detected, try to capture originals if we haven't yet and the current materials are NOT ours
+            if (_sorcererIdx != -1 && _origSorcerer == null && mats.Length > _sorcererIdx && !mats[_sorcererIdx].name.StartsWith("ArtFlag_"))
+                _origSorcerer = mats[_sorcererIdx];
+            if (_warlockIdx != -1 && _origWarlock == null && mats.Length > _warlockIdx && !mats[_warlockIdx].name.StartsWith("ArtFlag_"))
+                _origWarlock = mats[_warlockIdx];
+            if (_neutralIdx != -1 && _origNeutral == null && mats.Length > _neutralIdx && !mats[_neutralIdx].name.StartsWith("ArtFlag_"))
+                _origNeutral = mats[_neutralIdx];
         }
     }
 
@@ -131,6 +195,7 @@ public class FlagMaterialProvider
 
     public void UpdateMaterials()
     {
+        if (!_init) TryInitFromScene();
         if (!_init || _baseMaterial == null) return;
 
         var cfg = ModSystem.ConfigData;
@@ -186,7 +251,7 @@ public class FlagMaterialProvider
             }
         }
 
-        Material newMat = texture != null 
+        Material newMat = texture 
             ? CreateFromTexture(_baseMaterial, texture, tag) 
             : CreateFromColor(_baseMaterial, color, tag);
 
@@ -197,6 +262,59 @@ public class FlagMaterialProvider
         ApplyToAllFlags();
 
         _activeLoads[index] = null;
+    }
+
+    public void RevertToOriginal()
+    {
+        if (!_init) return;
+
+        EnsureReflectionInit();
+        if (_flagControllerType == null) return;
+
+        var flags = Object.FindObjectsByType(
+            _flagControllerType,
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
+
+        if (flags.Length == 0) return;
+
+        int revertedCount = 0;
+        foreach (var flag in flags)
+        {
+            var mats = (Material[])_flagMatsField.GetValue(flag);
+            if (mats == null || mats.Length == 0) continue;
+
+            // Restore the palette
+            if (_sorcererIdx != -1 && _origSorcerer != null && mats.Length > _sorcererIdx) mats[_sorcererIdx] = _origSorcerer;
+            if (_warlockIdx != -1 && _origWarlock != null && mats.Length > _warlockIdx) mats[_warlockIdx] = _origWarlock;
+            if (_neutralIdx != -1 && _origNeutral != null && mats.Length > _neutralIdx) mats[_neutralIdx] = _origNeutral;
+
+            var renderer = _flagVisualField.GetValue(flag) as Renderer;
+            if (renderer != null)
+            {
+                object factionVal = _factionField?.GetValue(flag);
+                int applyIndex = -1;
+
+                if (factionVal != null)
+                {
+                    int val = Convert.ToInt32(factionVal);
+                    if (_valToIndexMap.TryGetValue(val, out int mappedIdx)) applyIndex = mappedIdx;
+                    else if (val == 99) applyIndex = _neutralIdx;
+                    else if (val == (int)Faction.Sorcerer) applyIndex = _sorcererIdx;
+                    else if (val == (int)Faction.Warlock) applyIndex = _warlockIdx;
+                    else if (val == (int)Faction.Neutral) applyIndex = _neutralIdx;
+                }
+
+                if (applyIndex != -1 && applyIndex < mats.Length)
+                {
+                    renderer.sharedMaterial = mats[applyIndex];
+                    revertedCount++;
+                }
+            }
+        }
+
+        ModSystem.Log.LogInfo($"ArtFlagControl: Reverted materials on {revertedCount} flags.");
     }
 
     public void Cleanup()
