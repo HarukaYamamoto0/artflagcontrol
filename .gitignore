@@ -24,7 +24,8 @@ artifacts/
 *.userprefs
 *.csproj.user
 *.DotSettings.user
-Directory.Build.props
+/Directory.Build.props
+!/Directory.Build.props.example
 
 #################################
 # NuGet                          #
