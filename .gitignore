@@ -1,7 +1,3 @@
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
-
 ##############################
 # Build artefacts / output  #
 ##############################
@@ -9,6 +5,7 @@ bin/
 obj/
 out/
 publish/
+artifacts/
 *.pdb
 *.deps.json
 *.runtimeconfig.json
@@ -21,15 +18,18 @@ publish/
 #################################
 .vs/
 .idea/
+!.idea/dictionaries/
 *.user
 *.suo
 *.userprefs
 *.csproj.user
 *.DotSettings.user
+Directory.Build.props
 
 #################################
 # NuGet                          #
 #################################
+/packages/
 *.nupkg
 *.snupkg
 *.nuget.props
@@ -39,49 +39,30 @@ project.nuget.cache
 *.packagespec.json
 
 #################################
-# Build scripts cache (Cake)     #
-#################################
-ZZCakeBuild/obj/
-ZZCakeBuild/bin/
-
-#################################
 # Mod release artifacts          #
 #################################
-Releases/**/*.pdb
-Releases/**/*.deps.json
-Releases/**/*.runtimeconfig.json
-Releases/**/*.zip
-Releases/**/modinfo.json
+Releases/
 
-# Mantém assets e linguagem
-!Releases/**/assets/
-!Releases/**/assets/**
+#################################
+# Context / temp files           #
+#################################
+context/
 
 #################################
 # Logs / debug                   #
 #################################
 *.log
 *.trace
-*.DS_Store
 
 ##############################
-# Ignore OS trash             #
+# OS trash                    #
 ##############################
 Thumbs.db
 desktop.ini
 .DS_Store
 
 ##############################
-# Keep what matters           #
+# Rider specific (keep)       #
 ##############################
-!ZeroLossCoke/assets/
-!ZeroLossCoke/assets/**/lang/*.json
-!ZeroLossCoke/modinfo.json
-
-.idea
-!.idea/dictionaries/
-!.idea/dictionaries/project.xml
-
-Releases
-artifacts
-context
+riderModule.iml
+/_ReSharper.Caches/

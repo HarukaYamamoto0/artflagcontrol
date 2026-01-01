@@ -4,8 +4,6 @@
         <Version>1.0.0</Version>
         <ModVersion>$(Version)</ModVersion>
         <ZipName>art_flag_control</ZipName>
-
-        <GamePath>G:\SteamLibrary\steamapps\common\Mage Arena</GamePath>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -24,6 +22,9 @@
         <GenerateDependencyFile>false</GenerateDependencyFile>
         <Deterministic>true</Deterministic>
         <ImplicitUsings>false</ImplicitUsings>
+
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -91,7 +92,7 @@
         <Compile Remove="context\**\*"/>
     </ItemGroup>
 
-    <Target Name="CopyToBepInExsWithTimestamp" AfterTargets="Build">
+    <Target Name="CopyToBepInEx" AfterTargets="Build">
         <MakeDir
                 Directories="$(GamePath)\BepInEx\plugins\ArtFlagControl"/>
 
